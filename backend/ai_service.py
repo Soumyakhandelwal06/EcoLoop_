@@ -1,91 +1,67 @@
-import google.generativeai as genai
 import os
-import time
+import google.generativeai as genai
 from dotenv import load_dotenv
-from PIL import Image
-import io
-import json
 
-
+# 1. Load Environment Variables
 load_dotenv()
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
-# Configure Gemini
-api_key = os.getenv("GEMINI_API_KEY")
-if api_key:
-    genai.configure(api_key=api_key)
+if not GOOGLE_API_KEY:
+    print("CRITICAL WARNING: GOOGLE_API_KEY is missing from .env file.")
 
-async def verify_task_content(file_path: str, mime_type: str, task_tag: str) -> dict:
+genai.configure(api_key=GOOGLE_API_KEY)
+
+# Using Gemini 1.5 Flash for fast video/image analysis
+model = genai.GenerativeModel('gemini-1.5-flash')
+
+async def verify_task_submission(file_bytes: bytes, mime_type: str, task_description: str, task_type: str):
     """
-    Verifies if the uploaded content (Image or Video) matches the required task using Gemini.
+    Verifies if an image or video specifically proves completion of a Daily or Monthly task.
+    
+    Args:
+        file_bytes: The raw file data.
+        mime_type: 'image/jpeg', 'video/mp4', etc.
+        task_description: The text of the task (e.g., "Plant a sapling").
+        task_type: "Daily Task" or "Monthly Task".
     """
-    if not api_key:
-        print("WARNING: GEMINI_API_KEY not found. Returning Mock Success.")
-        return {
-            "is_valid": True, 
-            "message": "AI Verification Skipped (No API Key). Assuming success!", 
-            "confidence": 1.0
-        }
+    
+    # Precise Prompt for Task Verification
+    prompt = f"""
+    You are the AI Validator for the 'EcoLoop' sustainability app. 
+    
+    USER CLAIM:
+    The user claims to have completed a {task_type}.
+    Task Description: "{task_description}"
+    
+    YOUR JOB:
+    Analyze the attached media (Image or Video) and verify if it provides legitimate proof that this specific task was performed.
+    
+    PERFORM THESE CHECKS:
+    1. RELEVANCE: Does the visual content directly show the action described in the task? (e.g., if task is 'Plant a tree', do you see a tree being planted?)
+    2. AUTHENTICITY: Is this a real photo/video? Check for AI-generated artifacts or obvious fakes.
+    3. VIDEO ANALYSIS (if applicable): If this is a video, does the action take place within the footage?
+    
+    Output JSON:
+    {{
+        "is_verified": true | false,
+        "confidence_score": "High" | "Medium" | "Low",
+        "feedback_message": "A short, encouraging message for the user. If failed, explain why.",
+        "proof_detected": "Brief description of what you saw (e.g., 'I see a person holding a reusable bottle')."
+    }}
+    """
 
     try:
-        # Use gemini-2.0-flash as it's the latest and great for multimodal
-        model = genai.GenerativeModel('gemini-2.0-flash')
-        
-        prompt = f"Analyze this media (could be image or video). Does it show {task_tag}? Answer ONLY with a JSON object: {{ 'valid': boolean, 'reason': string }}."
+        content_parts = [
+            {"mime_type": mime_type, "data": file_bytes},
+            prompt
+        ]
 
-        if mime_type.startswith('video/'):
-            # Video path
-            print(f"DEBUG: Processing video with Gemini File API: {file_path}")
-            
-            # Upload the file
-            video_file = genai.upload_file(path=file_path, mime_type=mime_type)
-            
-            # Wait for processing
-            while video_file.state.name == "PROCESSING":
-                print(".", end="", flush=True)
-                time.sleep(1)
-                video_file = genai.get_file(video_file.name)
-
-            if video_file.state.name == "FAILED":
-                raise Exception("Video processing failed at Google Gemini backend.")
-
-            response = model.generate_content([prompt, video_file])
-            
-            # Clean up: Files are stored for 48 hours, but we can delete manually if needed
-            # For this prototype, we'll let them expire or add delete later.
-        else:
-            # Image path - optimized
-            image = Image.open(file_path)
-            response = model.generate_content([prompt, image])
-
-        if not response or not hasattr(response, 'text'):
-             return {
-                "is_valid": False,
-                "message": "AI could not process this media. Please try again with clear content.",
-                "confidence": 0.0
-            }
-
-        text = response.text.replace('```json', '').replace('```', '').strip()
-        
-        try:
-            result = json.loads(text)
-            return {
-                "is_valid": result.get("valid", False),
-                "message": result.get("reason", "Analysis complete."),
-                "confidence": 0.95 
-            }
-        except json.JSONDecodeError:
-            is_valid = "true" in text.lower() or "yes" in text.lower()
-            return {
-                "is_valid": is_valid,
-                "message": text,
-                "confidence": 0.8
-            }
+        response = model.generate_content(content_parts)
+        return response.text
 
     except Exception as e:
-        import traceback
-        traceback.print_exc()
+        print(f"Error in verify_task_submission: {e}")
         return {
-            "is_valid": False, 
-            "message": f"AI Error: {str(e)}", 
-            "confidence": 0.0
+            "error": "AI Service unavailable",
+            "details": str(e)
         }

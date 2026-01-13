@@ -64,12 +64,11 @@ export const GameProvider = ({ children }) => {
             const res = await api.get('/levels');
             // We need to merge backend levels with local progress if needed, 
             // but for now backend is the source of truth for level content.
-            // Backend should also return status, or we map user.progress to levels.
-            // My API currently returns just levels. The user object has 'progress'.
-            // I need to map them.
             setLevels(res.data);
+            setError(null);
         } catch (err) {
             console.error("Fetch Levels Failed", err);
+            setError("Failed to load game levels. Please check your connection.");
         }
     };
 
