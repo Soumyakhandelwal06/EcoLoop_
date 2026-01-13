@@ -4,6 +4,7 @@ import { useGame } from '../../context/GameContext';
 
 const TaskUpload = ({ onVerify, taskDescription }) => {
     const [file, setFile] = useState(null);
+    const [fileType, setFileType] = useState(null); // 'image' or 'video'
     const [verifying, setVerifying] = useState(false);
     const [verified, setVerified] = useState(false);
     const [result, setResult] = useState(null);
@@ -34,6 +35,7 @@ const TaskUpload = ({ onVerify, taskDescription }) => {
         const selectedFile = e.target.files[0];
         if (selectedFile) {
             setFile(URL.createObjectURL(selectedFile));
+            setFileType(selectedFile.type.startsWith('video') ? 'video' : 'image');
             setVerifying(true);
             setResult(null); // Clear previous result
             
@@ -82,13 +84,13 @@ const TaskUpload = ({ onVerify, taskDescription }) => {
                 <Camera className="w-8 h-8"/> Daily Task
             </h2>
             <p className="text-gray-600 mb-8 font-medium text-lg bg-green-50 p-4 rounded-xl border border-green-200">
-                {taskDescription || "Upload a photo proving you completed the eco-task!"}
+                {taskDescription || "Upload a photo or a short video proving you completed the eco-task!"}
             </p>
 
             <div className={`border-4 border-dashed rounded-3xl p-10 text-center transition cursor-pointer relative group ${result?.is_valid === false ? 'border-red-300 bg-red-50' : 'border-gray-300 hover:border-green-400 hover:bg-green-50'}`}>
                 <input 
                   type="file" 
-                  accept="image/*" 
+                  accept="image/*,video/*" 
                   className="absolute inset-0 opacity-0 cursor-pointer"
                   onChange={handleUpload}
                   disabled={verifying || verified}
@@ -98,6 +100,7 @@ const TaskUpload = ({ onVerify, taskDescription }) => {
                     <div className="flex flex-col items-center">
                         <Loader className="w-16 h-16 text-blue-500 animate-spin mb-4" />
                         <h3 className="text-xl font-bold text-blue-600">AI is Analyzing...</h3>
+                        {fileType === 'video' && <p className="text-sm font-bold text-blue-400 mb-1 animate-pulse italic">Watching your video (this can take a few seconds)...</p>}
                         <p className="text-sm text-gray-500">Checking your submission...</p>
                     </div>
                 ) : result?.is_valid === false ? (
@@ -111,18 +114,22 @@ const TaskUpload = ({ onVerify, taskDescription }) => {
                     <>
                         <Upload className="w-16 h-16 text-gray-400 mx-auto mb-4 group-hover:scale-110 transition" />
                         <h3 className="text-xl font-bold text-gray-700">Click to Upload Proof</h3>
-                        <p className="text-sm text-gray-500">Supports JPG, PNG</p>
+                        <p className="text-sm text-gray-500">Supports JPG, PNG, MP4, MOV</p>
                     </>
                 ) : (
                     <div className="relative">
-                        <img src={file} alt="Preview" className="max-h-64 mx-auto rounded-lg shadow" />
+                        {fileType === 'image' ? (
+                            <img src={file} alt="Preview" className="max-h-64 mx-auto rounded-lg shadow" />
+                        ) : (
+                            <video src={file} controls className="max-h-64 mx-auto rounded-lg shadow" />
+                        )}
                     </div>
                 )}
             </div>
             
             <div className="mt-8 bg-blue-50 p-4 rounded-xl text-sm text-blue-800 flex items-start gap-2">
                 <span>ℹ️</span>
-                <p>Powered by AI. Please upload a clear image relevant to the task.</p>
+                <p>Powered by AI. Please upload a clear image or video relevant to the task.</p>
             </div>
         </div>
     );

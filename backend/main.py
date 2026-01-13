@@ -4,6 +4,8 @@ from sqlalchemy.orm import Session
 from . import models, schemas, database, auth, ai_service
 from typing import List
 from datetime import date, timedelta
+import os
+import time
 
 # Initialize DB
 models.Base.metadata.create_all(bind=database.engine)
@@ -200,9 +202,24 @@ async def verify_task(
 ):
     print(f"DEBUG: Verifying task for {current_user.username}")
     print(f"DEBUG: Task Label received: {task_label}")
-    content = await file.read()
-    result = await ai_service.verify_image_content(content, task_label)
-    return result
+    print(f"DEBUG: Content Type: {file.content_type}")
+
+    # Save file temporarily to handle video processing or large images
+    temp_dir = "temp_uploads"
+    os.makedirs(temp_dir, exist_ok=True)
+    temp_path = os.path.join(temp_dir, f"{current_user.id}_{int(time.time())}_{file.filename}")
+    
+    try:
+        with open(temp_path, "wb") as buffer:
+            content = await file.read()
+            buffer.write(content)
+        
+        result = await ai_service.verify_task_content(temp_path, file.content_type, task_label)
+        return result
+    finally:
+        # Clean up temp file
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
 
 # --- Seed Data Endpoint (For Demo) ---
 @app.post("/seed")
