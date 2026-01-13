@@ -105,6 +105,16 @@ export const GameProvider = ({ children }) => {
         }
     };
 
+    const fetchLeaderboard = async () => {
+        try {
+            const res = await api.get('/leaderboard');
+            return res.data;
+        } catch (err) {
+            console.error("Fetch Leaderboard Failed", err);
+            return [];
+        }
+    };
+
     const logout = () => {
         localStorage.removeItem('token');
         setUser(null);
@@ -119,10 +129,11 @@ export const GameProvider = ({ children }) => {
         }
 
         try {
+            const token = localStorage.getItem('token');
             const res = await api.post('/verify-task', formData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
+                    'Authorization': `Bearer ${token}`
+                }
             });
             return res.data; // { is_valid: boolean, message: string, confidence: number }
         } catch (err) {
@@ -189,7 +200,8 @@ export const GameProvider = ({ children }) => {
             logout,
             verifyTask,
             updateProgress,
-            getLevelStatus
+            getLevelStatus,
+            fetchLeaderboard
         }}>
             {children}
         </GameContext.Provider>

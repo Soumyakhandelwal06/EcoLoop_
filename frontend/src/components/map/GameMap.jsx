@@ -14,11 +14,11 @@ const GameMap = () => {
     // Define levels with thematic zones - adjust Y for longer map
     // Adjusted Level 1 up to 85% to give space for the Start Button at the bottom
     const levels = [
-        { id: 1, x: 50, y: 85, theme: 'forest', label: 'Green Forest' },
+        { id: 1, x: 50, y: 88, theme: 'forest', label: 'Green Forest' },
         { id: 2, x: 20, y: 68, theme: 'river', label: 'Clean River' },
         { id: 3, x: 80, y: 48, theme: 'city', label: 'Eco City' },
         { id: 4, x: 30, y: 28, theme: 'mountain', label: 'Windy Peak' },
-        { id: 5, x: 50, y: 8, theme: 'sky', label: 'Space Station' },
+        { id: 5, x: 50, y: 12, theme: 'sky', label: 'Space Station' },
     ];
 
     const getStatus = (levelId) => {
@@ -28,6 +28,20 @@ const GameMap = () => {
 
     const handleLevelClick = (levelId) => {
         navigate(`/level/${levelId}`);
+    };
+
+    const handleStartAdventure = () => {
+        // Find the first level that is 'unlocked' but not 'completed'
+        // If all are completed, go to level 1 or 5.
+        // Let's find the highest ID with status 'unlocked' or 'completed'
+        const unlockedLevels = levels.filter(l => getStatus(l.id) !== 'locked');
+        if (unlockedLevels.length > 0) {
+            // Get the one with highest ID or first 'unlocked'
+            const current = unlockedLevels.find(l => getStatus(l.id) === 'unlocked') || unlockedLevels[unlockedLevels.length - 1];
+            navigate(`/level/${current.id}`);
+        } else {
+            navigate(`/level/1`);
+        }
     };
 
     // Dynamic Path Generation ensuring line passes through nodes
@@ -60,30 +74,35 @@ const GameMap = () => {
     const pathData = generatePath();
 
     return (
-        <div className="relative w-full min-h-[1400px] rounded-t-3xl overflow-hidden shadow-2xl border-x-8 border-t-8 border-white/50 bg-sky-300 mx-auto max-w-full">
-            {/* ... Background Layers ... */}
+        <div className="relative w-full min-h-[1600px] overflow-hidden bg-[#064e3b]">
+            <div className="absolute inset-0 bg-gradient-to-b from-[#064e3b] via-[#059669] to-[#10b981]"></div>
             
-            {/* 1. Sky Gradient */}
-            <div className="absolute inset-0 bg-gradient-to-b from-slate-900 via-indigo-600 to-sky-300"></div>
+            {/* 1. Grainy Texture Overlay */}
+            <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay" style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/asfalt-dark.png")' }}></div>
+
+            {/* 2. Soft Organic Glows */}
+            <div className="absolute top-[10%] left-[-10%] w-[60%] h-[40%] bg-emerald-400/20 blur-[120px] rounded-full animate-pulse"></div>
+            <div className="absolute top-[40%] right-[-5%] w-[50%] h-[40%] bg-green-300/10 blur-[100px] rounded-full animate-pulse delay-1000"></div>
+            <div className="absolute bottom-[10%] left-[20%] w-[70%] h-[30%] bg-lime-400/20 blur-[150px] rounded-full animate-pulse delay-2000"></div>
 
             {/* --- DECORATIONS --- */}
             
-            {/* ZONE 5: SPACE (Top 15%) */}
+            {/* ZONE 5: MYSTICAL CANOPY (Top 15%) */}
             <div className="absolute top-0 w-full h-[15%]">
-                <Moon className="absolute top-10 left-10 text-yellow-100 opacity-80 animate-pulse" size={60} />
-                <div className="absolute top-20 right-20 animate-bounce delay-1000">
-                    <Rocket size={50} className="text-white transform rotate-45" />
+                <Sun className="absolute top-10 left-10 text-yellow-100 opacity-60 animate-spin-slow" size={80} />
+                <div className="absolute top-24 right-24 animate-[float_10s_ease-in-out_infinite]">
+                    <Bird size={60} className="text-white/40" />
                 </div>
-                {[...Array(20)].map((_, i) => (
-                    <Star 
-                        key={`star-${i}`}
-                        size={Math.random() * 10 + 4} 
-                        className="text-white absolute animate-pulse"
-                        fill="white"
+                {[...Array(15)].map((_, i) => (
+                    <div 
+                        key={`mote-${i}`}
+                        className="absolute bg-white/40 rounded-full blur-[1px] animate-pulse"
                         style={{ 
+                            width: `${Math.random() * 4 + 2}px`,
+                            height: `${Math.random() * 4 + 2}px`,
                             top: `${Math.random() * 100}%`, 
                             left: `${Math.random() * 100}%`,
-                            animationDelay: `${Math.random() * 2}s`
+                            animationDelay: `${Math.random() * 5}s`
                         }}
                     />
                 ))}
@@ -115,72 +134,79 @@ const GameMap = () => {
 
             {/* ZONE 2: RIVER (55% - 75%) */}
             <div className="absolute top-[55%] w-full h-[20%] overflow-hidden">
-                 <div className="absolute inset-0 bg-blue-500/20 transform skew-y-[-2deg] origin-left"></div>
+                 <div className="absolute inset-0 bg-green-700/20 transform skew-y-[-2deg] origin-left"></div>
                  <Waves className="absolute bottom-10 left-0 w-full text-blue-300 opacity-50 h-20 animate-pulse" />
                  <Ship size={48} className="absolute top-1/2 left-[20%] text-white animate-[float_20s_linear_infinite]" />
                  <Fish size={20} className="absolute bottom-10 right-[20%] text-orange-400 animate-bounce" />
                  <Fish size={24} className="absolute bottom-14 right-[30%] text-yellow-400 animate-ping" />
             </div>
 
-            {/* ZONE 1: FOREST (75% - 100%) */}
-            <div className="absolute top-[75%] w-full h-[25%] bg-gradient-to-t from-green-600 to-green-300 clip-path-hill">
-                 {[...Array(15)].map((_, i) => (
+            {/* ZONE 1: DEEP FOREST (75% - 100%) */}
+            <div className="absolute top-[75%] w-full h-[25%] bg-gradient-to-t from-[#064e3b] to-transparent">
+                 {[...Array(25)].map((_, i) => (
                     <Trees 
                         key={`tree-${i}`}
-                        size={Math.random() * 40 + 40}
-                        className="absolute text-green-800 opacity-60"
+                        size={Math.random() * 60 + 50}
+                        className="absolute text-green-900/40"
                         style={{
-                            bottom: `${Math.random() * 60 + 10}%`,
-                            left: `${Math.random() * 90}%`
+                            bottom: `${Math.random() * 80 + 5}%`,
+                            left: `${Math.random() * 100}%`,
+                            transform: `scaleX(${i % 2 === 0 ? 1 : -1})`
                         }}
                     />
                  ))}
-                 <Tent size={48} className="absolute bottom-20 left-20 text-orange-600" fill="currentColor" />
-                 <div className="absolute bottom-24 left-32 text-orange-500 animate-pulse">🔥</div>
-                 {[...Array(10)].map((_, i) => (
-                    <Flower 
-                        key={`flower-${i}`}
-                        size={16}
-                        className={`${i % 2 === 0 ? 'text-pink-500' : 'text-yellow-500'} absolute animate-bounce`}
-                         style={{
-                            bottom: `${Math.random() * 30}%`,
-                            left: `${Math.random() * 90}%`,
-                            animationDuration: `${Math.random() * 2 + 1}s`
+                 <div className="absolute bottom-32 left-1/4 flex gap-4 opacity-50">
+                    <Tent size={60} className="text-green-900" />
+                    <Flower size={30} className="text-white/30 animate-pulse" />
+                 </div>
+                 {[...Array(20)].map((_, i) => (
+                    <div 
+                        key={`leaf-${i}`}
+                        className="absolute pointer-events-none animate-[float_15s_linear_infinite]"
+                        style={{
+                            bottom: `${Math.random() * 40}%`,
+                            left: `${Math.random() * 100}%`,
+                            animationDelay: `${Math.random() * 10}s`,
+                            opacity: 0.2
                         }}
-                    />
+                    >
+                        🍃
+                    </div>
                  ))}
             </div>
 
             {/* PATH (Overlay) */}
             <svg 
-                className="absolute inset-0 w-full h-full pointer-events-none drop-shadow-xl z-10" 
+                className="absolute inset-0 w-full h-full pointer-events-none z-10" 
                 viewBox="0 0 100 100" 
                 preserveAspectRatio="none"
             >
-                <defs>
-                    <linearGradient id="pathGradient" x1="0%" y1="100%" x2="0%" y2="0%">
-                        <stop offset="0%" stopColor="#dcfce7" />
-                        <stop offset="100%" stopColor="#ffffff" />
-                    </linearGradient>
-                </defs>
+                <filter id="glow">
+                    <feGaussianBlur stdDeviation="0.5" result="coloredBlur"/>
+                    <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
                 <path 
                     d={pathData} 
                     fill="none" 
                     stroke="white" 
-                    strokeWidth="1.2" 
-                    strokeDasharray="1 3"
+                    strokeWidth="0.8" 
+                    strokeDasharray="2 4"
                     strokeLinecap="round"
-                    className="opacity-90"
+                    className="opacity-20"
                 />
                  {/* Animated Dash */}
                  <path 
                     d={pathData} 
                     fill="none" 
-                    stroke="white" 
-                    strokeWidth="1.2" 
-                    strokeDasharray="2 4"
+                    stroke="#dcfce7" 
+                    strokeWidth="1" 
+                    strokeDasharray="1 5"
                     strokeLinecap="round"
-                    className="animate-[dash_60s_linear_infinite]"
+                    filter="url(#glow)"
+                    className="animate-[dash_80s_linear_infinite]"
                 />
             </svg>
 
@@ -210,8 +236,9 @@ const GameMap = () => {
             
             {/* Start Button aligned with Level 1 */}
              <div 
-                className="absolute transform -translate-x-1/2 bg-white px-8 py-3 rounded-full shadow-[0_0_20px_rgba(34,197,94,0.6)] border-4 text-green-700 font-extrabold text-lg tracking-widest flex items-center gap-2 animate-bounce z-30 hover:scale-105 transition cursor-pointer"
-                style={{ left: '50%', top: '96%' }}
+                onClick={handleStartAdventure}
+                className="absolute transform -translate-x-1/2 bg-white px-8 py-3 rounded-full shadow-[0_0_30px_rgba(34,197,94,0.4)] border-4 border-green-500 text-green-700 font-extrabold text-lg tracking-widest flex items-center gap-2 animate-bounce z-30 hover:scale-105 transition cursor-pointer"
+                style={{ left: '50%', top: '97%' }}
              >
                 <span>START ADVENTURE</span>
              </div>

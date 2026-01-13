@@ -17,3 +17,7 @@ dist/
 
 # Tooling
 .gemini/
+.venv/
+*.log
+test_*.py
+find_model.py

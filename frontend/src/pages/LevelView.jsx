@@ -64,14 +64,24 @@ const LevelView = () => {
                             const isActive = step === steps[idx];
                             const isDone = steps.indexOf(step) > idx;
                             
+                            // Allow clicking if it's the current step or a step already completed
+                            // Actually, let's allow clicking ANY step that the user has reached
+                            const currentIdx = steps.indexOf(step);
+                            const isReachable = idx <= currentIdx;
+
                             return (
-                                <div key={idx} className={`px-4 py-2 rounded-lg font-bold transition-all
-                                    ${isActive ? 'bg-green-600 text-white scale-110 shadow' : ''}
-                                    ${isDone ? 'bg-green-200 text-green-800' : ''}
-                                    ${!isActive && !isDone ? 'bg-gray-200 text-gray-400' : ''}
-                                `}>
+                                <button 
+                                    key={idx} 
+                                    onClick={() => isReachable && setStep(steps[idx])}
+                                    disabled={!isReachable}
+                                    className={`px-4 py-2 rounded-lg font-bold transition-all
+                                        ${isActive ? 'bg-green-600 text-white scale-110 shadow' : ''}
+                                        ${isDone ? 'bg-green-200 text-green-800' : ''}
+                                        ${!isActive && !isDone ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'cursor-pointer hover:shadow-md'}
+                                    `}
+                                >
                                     {label}
-                                </div>
+                                </button>
                             );
                         })}
                     </div>
