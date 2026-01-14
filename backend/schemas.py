@@ -28,6 +28,7 @@ class LevelBase(BaseModel):
     theme_id: str
     video_id: str
     task_description: str
+    info_content: str
 
 class QuestionBase(BaseModel):
     text: str
@@ -80,3 +81,47 @@ class ProgressUpdate(BaseModel):
     level_id: int
     coins_earned: int
     xp_earned: int
+
+# --- Chat Schemas ---
+
+class ChatRequest(BaseModel):
+    message: str
+
+class ChatResponse(BaseModel):
+    response: str
+
+# --- Store Schemas ---
+class StoreItemSchema(BaseModel):
+    id: int
+    name: str
+    description: str
+    price: int
+    icon_type: str
+    category: str
+    image_url: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+class PurchaseRequest(BaseModel):
+    item_id: int
+
+# --- Challenge Schemas ---
+class ChallengeSchema(BaseModel):
+    id: int
+    title: str
+    description: str
+    coin_reward: int
+    type: str # 'daily', 'weekly'
+    is_active: bool
+    verification_label: Optional[str] = None
+    is_completed: Optional[bool] = False
+
+    class Config:
+        from_attributes = True
+
+class ChallengeCompletionResponse(BaseModel):
+    message: str
+    new_balance: int
+    streak_incremented: bool
+    new_streak: int

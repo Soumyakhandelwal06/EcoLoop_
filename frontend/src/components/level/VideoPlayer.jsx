@@ -83,7 +83,7 @@ const VideoPlayer = ({ onComplete, levelData }) => {
                         onClick={onComplete}
                         className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-xl font-bold text-lg shadow-lg transform active:scale-95 transition"
                     >
-                        Start Quiz →
+                        Go to Info →
                     </button>
                 </div>
             )}

@@ -2,16 +2,26 @@ import React from 'react';
 import Header from '../components/common/Header';
 import GameMap from '../components/map/GameMap';
 import { motion } from 'framer-motion';
-import { Compass } from 'lucide-react';
+import { Compass, Home } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Dashboard = () => {
     return (
         <div className="min-h-screen bg-[#064e3b] pb-20 overflow-x-hidden selection:bg-green-200">
             <Header />
-            
+
             <main className="w-full relative">
+                {/* Float Controls */}
+                <div className="absolute top-4 left-6 z-50 flex flex-col gap-3">
+                    <Link to="/" className="flex items-center gap-2 bg-black/40 hover:bg-black/60 text-white px-5 py-2.5 rounded-2xl backdrop-blur-xl border border-white/10 transition-all active:scale-95 group font-black shadow-2xl">
+                        <Home className="w-5 h-5 transition-transform group-hover:scale-110" />
+                        <span>Home</span>
+                    </Link>
+                </div>
+
+                {/* Hero / Title Section */}
                 <div className="absolute top-0 left-0 w-full z-10 pointer-events-none pt-4 flex flex-col items-center">
-                    <motion.div 
+                    <motion.div
                         initial={{ y: -20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         className="text-center mb-10"
@@ -26,9 +36,11 @@ const Dashboard = () => {
                     </motion.div>
                 </div>
 
+                {/* --- Challenges Section --- */}
                 <div className="w-full">
                     <GameMap />
                 </div>
+
             </main>
         </div>
     );

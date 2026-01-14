@@ -38,20 +38,24 @@ export const GameProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    const fetchUser = async () => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            try {
+                const res = await api.get('/users/me');
+                setUser(res.data);
+            } catch (err) {
+                console.error("Auth Failed - Token Invalid", err);
+                localStorage.removeItem('token');
+                setUser(null);
+            }
+        }
+    };
+
     // Initial Load - Check Token
     useEffect(() => {
         const init = async () => {
-            const token = localStorage.getItem('token');
-            if (token) {
-                try {
-                    const res = await api.get('/users/me');
-                    setUser(res.data);
-                } catch (err) {
-                    console.error("Auth Failed - Token Invalid", err);
-                    localStorage.removeItem('token');
-                    setUser(null);
-                }
-            }
+            await fetchUser();
             // Always fetch levels (Public Data)
             await fetchLevels();
             setLoading(false);
@@ -64,11 +68,12 @@ export const GameProvider = ({ children }) => {
             const res = await api.get('/levels');
             // We need to merge backend levels with local progress if needed, 
             // but for now backend is the source of truth for level content.
+            // Backend should also return status, or we map user.progress to levels.
+            // My API currently returns just levels. The user object has 'progress'.
+            // I need to map them.
             setLevels(res.data);
-            setError(null);
         } catch (err) {
             console.error("Fetch Levels Failed", err);
-            setError("Failed to load game levels. Please check your connection.");
         }
     };
 
@@ -185,15 +190,60 @@ export const GameProvider = ({ children }) => {
         const prog = user.progress.find(p => p.level_id === levelId);
         if (prog) return prog.status;
 
-        // Unlock next level if previous is completed
-        if (levelId > 1) {
-            const prevProg = user.progress.find(p => p.level_id === levelId - 1);
-            if (prevProg && prevProg.status === 'COMPLETED') {
-                return 'unlocked';
-            }
-        }
-
         return levelId === 1 ? 'unlocked' : 'locked';
+    };
+
+    const getStoreItems = async () => {
+        try {
+            const res = await api.get('/store/items');
+            return res.data;
+        } catch (err) {
+            console.error("Store Fetch Error:", err);
+            return [];
+        }
+    };
+
+    const buyItem = async (itemId) => {
+        try {
+            const res = await api.post('/store/buy', { item_id: itemId });
+            // Refresh user to get new balance
+            await fetchUser();
+            return { success: true, message: res.data.message };
+        } catch (err) {
+            console.error("Purchase Error:", err);
+            return {
+                success: false,
+                message: err.response?.data?.detail || "Purchase failed"
+            };
+        }
+    };
+
+    const getChallenges = async () => {
+        try {
+            const res = await api.get('/challenges');
+            return res.data;
+        } catch (err) {
+            console.error("Fetch Challenges Failed", err);
+            return [];
+        }
+    };
+
+    const completeChallenge = async (challengeId, file) => {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const res = await api.post(`/challenges/${challengeId}/complete`, formData);
+            // Refresh user to get new balance and streak
+            await fetchUser();
+            return { success: true, ...res.data };
+        } catch (err) {
+            console.error("Complete Challenge Failed", err);
+            return {
+                success: false,
+                message: err.response?.data?.detail || "Completion failed"
+            };
+        }
     };
 
     return (
@@ -208,7 +258,12 @@ export const GameProvider = ({ children }) => {
             verifyTask,
             updateProgress,
             getLevelStatus,
-            fetchLeaderboard
+            fetchLeaderboard,
+            getStoreItems,
+            buyItem,
+            getChallenges,
+            completeChallenge,
+            fetchUser // Expose fetchUser for manual refresh if needed
         }}>
             {children}
         </GameContext.Provider>
