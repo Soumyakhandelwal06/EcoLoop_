@@ -79,6 +79,7 @@ class Question(Base):
     options = Column(String) # "A|B|C|D"
     correct_index = Column(Integer) # 0-3
     difficulty = Column(Integer) # 1-5 (Increasing difficulty)
+    segment_index = Column(Integer, default=0) # 0-4 (Which video segment this belongs to)
 
     level = relationship("Level", back_populates="questions")
 

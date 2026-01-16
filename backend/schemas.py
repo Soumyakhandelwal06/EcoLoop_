@@ -43,6 +43,7 @@ class QuestionBase(BaseModel):
     options: str
     correct_index: int
     difficulty: int
+    segment_index: int = 0
 
 class Question(QuestionBase):
     id: int
