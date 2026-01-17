@@ -3,7 +3,7 @@ import Header from '../components/common/Header';
 import { useGame } from '../context/GameContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ShoppingBag, Star, TreePine, Shirt, Droplet, Zap, Award, Loader, CheckCircle2, AlertCircle, ArrowLeft } from 'lucide-react';
+import { ShoppingBag, Star, TreePine, Shirt, Droplet, Zap, Award, Loader, CheckCircle2, AlertCircle, ArrowLeft, Sticker, Box, Briefcase, BookOpen } from 'lucide-react';
 
 const Store = () => {
     const { getStoreItems, buyItem, user } = useGame();
@@ -67,6 +67,10 @@ const Store = () => {
             case 'tree': return <TreePine className="w-12 h-12 text-green-500 drop-shadow-[0_0_10px_rgba(34,197,94,0.3)]" />;
             case 'water': return <Droplet className="w-12 h-12 text-cyan-500 drop-shadow-[0_0_10px_rgba(6,182,212,0.3)]" />;
             case 'zap': return <Zap className="w-12 h-12 text-yellow-400 fill-yellow-400 drop-shadow-[0_0_15px_rgba(250,204,21,0.5)]" />;
+            case 'sticker': return <Sticker className="w-12 h-12 text-pink-500 drop-shadow-[0_0_10px_rgba(236,72,153,0.3)]" />;
+            case 'box': return <Box className="w-12 h-12 text-indigo-500 drop-shadow-[0_0_10px_rgba(99,102,241,0.3)]" />;
+            case 'pouch': return <Briefcase className="w-12 h-12 text-emerald-500 drop-shadow-[0_0_10px_rgba(16,185,129,0.3)]" />;
+            case 'book': return <BookOpen className="w-12 h-12 text-amber-600 drop-shadow-[0_0_10px_rgba(217,119,6,0.3)]" />;
             default: return <Star className="w-12 h-12 text-gray-400" />;
         }
     };
@@ -134,7 +138,7 @@ const Store = () => {
 
                 {/* Sub-Header / Filters (LeetCode Style) */}
                 <div className="flex flex-wrap gap-2 mb-12 justify-center bg-white/50 backdrop-blur-sm p-2 rounded-[2.5rem] border border-gray-200/50 max-w-fit mx-auto shadow-sm">
-                    {['All Items', 'Symbolic', 'Premium', 'Virtual'].map((tab) => (
+                    {['All Items', 'Symbolic', 'Premium', 'Virtual', 'Student'].map((tab) => (
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
@@ -165,7 +169,8 @@ const Store = () => {
                                 <div className="absolute top-6 right-8">
                                     <span className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest ${item.category === 'Symbolic' ? 'bg-emerald-50 text-emerald-600' :
                                         item.category === 'Premium' ? 'bg-orange-50 text-orange-600' :
-                                            'bg-blue-50 text-blue-600'
+                                            item.category === 'Student' ? 'bg-indigo-50 text-indigo-600' :
+                                                'bg-blue-50 text-blue-600'
                                         }`}>
                                         {item.category}
                                     </span>

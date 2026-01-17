@@ -19,16 +19,23 @@ def seed_database(db: Session):
         db.commit()
 
     # 2. Seed Store Items
-    if db.query(models.StoreItem).count() == 0:
+    if db.query(models.StoreItem).count() < 9: # Check if expanded list needs seeding
         store_items = [
             {"name": "Plant a Tree", "description": "We will plant a real tree in your name.", "price": 1000, "icon_type": "tree", "category": "Symbolic", "image_url": "/static/image/store/tree.jpg"},
             {"name": "Eco-Warrior Hoodie", "description": "Virtual hoodie for your avatar.", "price": 500, "icon_type": "hoodie", "category": "Premium", "image_url": "/static/image/store/hoodie.jpg"},
             {"name": "Reusable Bottle", "description": "Digital badge for your profile.", "price": 200, "icon_type": "bottle", "category": "Virtual", "image_url": "/static/image/store/bottle.jpg"},
             {"name": "Waste Hero Badge", "description": "Rare gold profile badge.", "price": 300, "icon_type": "badge", "category": "Premium", "image_url": "/static/image/store/badge.jpg"},
+            {"name": "Eco Sticker Pack", "description": "Fun stickers to spread the green message.", "price": 150, "icon_type": "sticker", "category": "Student", "image_url": "/static/image/store/stickers.jpg"},
+            {"name": "Bio-Geometry Box", "description": "Sleek, transparent, and eco-friendly geometry kit.", "price": 600, "icon_type": "box", "category": "Student", "image_url": "/static/image/store/geometry_box.jpg"},
+            {"name": "Recycled Pouch", "description": "Durable pouch made from upcycled fabric.", "price": 400, "icon_type": "pouch", "category": "Student", "image_url": "/static/image/store/pouch.jpg"},
+            {"name": "Green Journal", "description": "100% recycled paper for your notes.", "price": 300, "icon_type": "book", "category": "Student", "image_url": "/static/image/store/notebook.jpg"},
+            {"name": "Solar Charger", "description": "Charge your devices with the sun's energy.", "price": 2500, "icon_type": "zap", "category": "Premium", "image_url": "/static/image/store/solar_charger.jpg"},
         ]
         for item in store_items:
-            db_item = models.StoreItem(**item)
-            db.add(db_item)
+            existing = db.query(models.StoreItem).filter(models.StoreItem.name == item["name"]).first()
+            if not existing:
+                db_item = models.StoreItem(**item)
+                db.add(db_item)
         db.commit()
 
     # 3. Seed Challenges
