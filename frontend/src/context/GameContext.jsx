@@ -4,8 +4,11 @@ import axios from 'axios';
 const GameContext = createContext();
 
 // Configure Axios
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+console.log("EcoLoop API Base URL:", API_URL);
+
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000',
+    baseURL: API_URL,
 });
 
 // Add Token Interceptor
@@ -73,7 +76,7 @@ export const GameProvider = ({ children }) => {
             // I need to map them.
             setLevels(res.data);
         } catch (err) {
-            console.error("Fetch Levels Failed", err);
+            console.error("Fetch Levels Failed. Current BaseURL:", api.defaults.baseURL, err);
         }
     };
 
