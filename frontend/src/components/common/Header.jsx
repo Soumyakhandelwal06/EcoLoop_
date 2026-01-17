@@ -35,6 +35,15 @@ const Header = () => {
         navigate('/');
     };
 
+    const identity = React.useMemo(() => {
+        if (!user || !user.progress) return "Eco Hero";
+        const completedCount = user.progress.filter(p => p.status === 'completed').length;
+        const identities = [
+            "Eco Novice", "Eco Beginner", "Climate Protector", "Nature Champion", "Planet Guardian", "Eco Legend"
+        ];
+        return identities[Math.min(completedCount, identities.length - 1)];
+    }, [user]);
+
     return (
         <>
             <header className="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-md border-b border-slate-100 shadow-sm">
@@ -117,8 +126,12 @@ const Header = () => {
                                     <div className="w-px h-10 bg-slate-100 mx-2"></div>
 
                                     {/* Profile */}
-                                    <Link to="/profile" className="flex items-center gap-2 group">
-                                        <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center border-2 border-green-500 group-hover:border-green-600 transition overflow-hidden shadow-sm" title={user.username}>
+                                    <Link to="/profile" className="flex items-center gap-3 group bg-slate-50 px-3 py-1.5 rounded-2xl border border-slate-100 hover:bg-white transition-all hover:shadow-sm">
+                                        <div className="flex flex-col items-end hidden sm:flex">
+                                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Identity</span>
+                                            <span className="text-xs font-black text-green-600 leading-none">{identity}</span>
+                                        </div>
+                                        <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center border-2 border-green-500 group-hover:border-green-600 transition overflow-hidden shadow-sm" title={`${user.username} (${identity})`}>
                                             <span className="text-xl">👩‍🎓</span>
                                         </div>
                                     </Link>
