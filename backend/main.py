@@ -12,6 +12,7 @@ from datetime import date, timedelta
 import os
 import time
 import email_utils
+from seed_utils import seed_database
 
 # Initialize DB
 models.Base.metadata.create_all(bind=database.engine)
@@ -37,7 +38,18 @@ app.add_middleware(
 )
 
 # Mount Static Files
+if not os.path.exists("static/image/store"):
+    os.makedirs("static/image/store", exist_ok=True)
+
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
+@app.on_event("startup")
+def startup_event():
+    db = database.SessionLocal()
+    try:
+        seed_database(db)
+    finally:
+        db.close()
 
 @app.get("/")
 def root():
