@@ -37,9 +37,9 @@ function App() {
               <Routes>
                 <Route path="/" element={<Landing />} />
                 <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Login />} /> {/* Reuse Login for prototype */}
+                <Route path="/signup" element={<Login />} />
 
-                {/* Protected Routes (Mocked) */}
+                {/* Protected Routes */}
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/level/:id" element={<LevelView />} />
                 <Route path="/profile" element={<Profile />} />

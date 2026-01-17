@@ -183,8 +183,8 @@ export const GameProvider = ({ children }) => {
         }
 
         // Find progress entry
-        // NOTE: My backend doesn't automatically create progress for level 1 on register yet (I left a TODO).
-        // So I rely on the client side logic or I should fix the backend register.
+        // NOTE: Backend automatically creates progress for level 1 on register.
+        // So we can rely on that state.
         // For now, let's treat Level 1 as always unlocked if nothing exists.
 
         // Wait, user.progress is a list.

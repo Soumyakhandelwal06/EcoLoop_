@@ -43,6 +43,13 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 def root():
     return {"message": "EcoLoop API is running", "docs": "/docs"}
 
+@app.get("/health")
+def health_check():
+    """
+    Standard health check endpoint to verify backend availability.
+    """
+    return {"status": "healthy", "timestamp": str(date.today())}
+
 # --- Helpers ---
 
 def update_user_streak(user: models.User, db: Session):
@@ -146,6 +153,7 @@ def update_progress(
     # Only update streak if it's a level completion (task verified)
     if progress_data.is_level_completion:
         update_user_streak(current_user, db)
+        
     # 2. Check/Update UserProgress for this Level
     user_progress = db.query(models.UserProgress).filter(
         models.UserProgress.user_id == current_user.id,
@@ -158,8 +166,7 @@ def update_progress(
              user_progress.status = "completed"
              user_progress.score = max(user_progress.score, progress_data.xp_earned) 
     else:
-        # Create progress entry
-        # If not completion (e.g. just video), status remains 'unlocked' or whatever default
+        # Create progress entry if it doesn't exist
         new_status = "completed" if progress_data.is_level_completion else "unlocked"
         user_progress = models.UserProgress(
             user_id=current_user.id,
@@ -192,8 +199,13 @@ def update_progress(
                 elif next_progress.status == "locked":
                     next_progress.status = "unlocked"
         
-    db.commit()
-    db.refresh(current_user)
+    try:
+        db.commit()
+        db.refresh(current_user)
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
     return {"message": "Progress Updated", "new_balance": current_user.coins}
 
 # --- Game Routes ---
@@ -439,10 +451,10 @@ def seed_data(db: Session = Depends(database.get_db)):
     levels_data = [
 
         {"title": "Sustainability", "description": "Save the world!", "order": 1, "theme_id": "forest", "xp_reward": 100, "video_id": "/static/videos/level1.mp4", "task_description": "Take a photo of any single potted plant", "info_content": "Definition: Sustainability is described as a way of living that minimizes environmental damage by understanding how our lifestyle choices impact the world.\n\nSustainable Development: It is defined as development that meets the needs of the present generation without compromising the ability of future generations to meet their own needs.\n\nGoal: The ultimate goal is to \"save the world\" and ensure the health and well-being of the planet for the future."},
-        {"title": "Environmental Sustainability", "description": "Keep nature safe.", "order": 2, "theme_id": "river", "xp_reward": 150, "video_id": "/static/videos/level2.mp4", "task_description": "Take a photo of you using a reusable water bottle!", "info_content": "Focus: This specific type of sustainability focuses on keeping natural materials safe and protecting the habitats of animals and plants.\n\nActionable Tips:\n\nConserve Water: Turn off taps while brushing or shaving, take shorter showers, and reuse unsalted cooking water for plants.\n\nReduce Plastic: Use less plastic (bags and bottles) to prevent pollution and save energy.\n\nPlanting: Growing your own plants helps prevent harmful chemicals from infecting the environment.\n\nFood Consumption: Take smaller portions to avoid food waste and reduce dependency on food importation."},
+        {"title": "Env. Sustainability", "description": "Keep nature safe.", "order": 2, "theme_id": "river", "xp_reward": 150, "video_id": "/static/videos/level2.mp4", "task_description": "Take a photo of you using a reusable water bottle!", "info_content": "Focus: This specific type of sustainability focuses on keeping natural materials safe and protecting the habitats of animals and plants.\n\nActionable Tips:\n\nConserve Water: Turn off taps while brushing or shaving, take shorter showers, and reuse unsalted cooking water for plants.\n\nReduce Plastic: Use less plastic (bags and bottles) to prevent pollution and save energy.\n\nPlanting: Growing your own plants helps prevent harmful chemicals from infecting the environment.\n\nFood Consumption: Take smaller portions to avoid food waste and reduce dependency on food importation."},
         {"title": "Natural Resources", "description": "Mother Nature's supply.", "order": 3, "theme_id": "city", "xp_reward": 200, "video_id": "/static/videos/level3.mp4", "task_description": "Take a photo of a recycling bin or segregated waste.", "info_content": "Definition: These are sources of supply or support provided by \"Mother Nature\" that are present on Earth without human activity (e.g., water, forests, air, minerals).\n\nClassification:\n\nRenewable (Inexhaustible): Resources with an unlimited supply that can be used repeatedly, such as sunlight, air, and water (though water can become polluted).\n\nNon-Renewable (Exhaustible): Resources available in limited quantities that take a very long time to replenish, such as coal, petroleum, and natural gas.\n\nConsumption: There is a disparity in consumption; for instance, people in rich countries consume up to 10 times more natural resources than those in poorer countries."},
-        {"title": "3 R's (Reduce, Reuse, Recycle)", "description": "Manage waste.", "order": 4, "theme_id": "mountain", "xp_reward": 250, "video_id": "/static/videos/level4.mp4", "task_description": "Take a photo of a bicycle or walking path (eco-transport).", "info_content": "Concept: A technique central to sustainable living to manage waste and resources.\n\nReduce: Curb the temptation to buy new products to decrease demand on resources.\n\nReuse: Find new uses for items instead of throwing them away (e.g., reusing paper for packaging).\n\nRecycle: Process waste materials into new products (e.g., molding glass into new glass, turning plastic into hangers or toys)."},
-        {"title": "Global Warming & Climate Change", "description": "Earth is slowly dying.", "order": 5, "theme_id": "sky", "xp_reward": 500, "video_id": "/static/videos/level5.mp4", "task_description": "Take a clear photo of the sky (aim for clean air!).", "info_content": "Impact: The videos describe the Earth as \"slowly dying\" and under threat from \"extreme climate change\" due to the rising world population and growing demand for resources.\n\nCauses: Activities like burning fossil fuels (coal, petroleum) and excessive energy usage contribute to environmental damage.\n\nPollution: Air and water pollution are highlighted as hazardous conditions that threaten the survival of living beings and render renewable resources like water unusable."},
+        {"title": "3 R's", "description": "Manage waste.", "order": 4, "theme_id": "mountain", "xp_reward": 250, "video_id": "/static/videos/level4.mp4", "task_description": "Take a photo of a bicycle or walking path (eco-transport).", "info_content": "Concept: A technique central to sustainable living to manage waste and resources.\n\nReduce: Curb the temptation to buy new products to decrease demand on resources.\n\nReuse: Find new uses for items instead of throwing them away (e.g., reusing paper for packaging).\n\nRecycle: Process waste materials into new products (e.g., molding glass into new glass, turning plastic into hangers or toys)."},
+        {"title": "Global Warming", "description": "Earth is slowly dying.", "order": 5, "theme_id": "sky", "xp_reward": 500, "video_id": "/static/videos/level5.mp4", "task_description": "Take a clear photo of the sky (aim for clean air!).", "info_content": "Impact: The videos describe the Earth as \"slowly dying\" and under threat from \"extreme climate change\" due to the rising world population and growing demand for resources.\n\nCauses: Activities like burning fossil fuels (coal, petroleum) and excessive energy usage contribute to environmental damage.\n\nPollution: Air and water pollution are highlighted as hazardous conditions that threaten the survival of living beings and render renewable resources like water unusable."},
         # Levels 6-10 (From n2, renumbered)
         {"title": "Green Forest", "description": "Save the trees!", "order": 6, "theme_id": "forest", "xp_reward": 600, "video_id": "/static/videos/level1.mp4", "task_description": "Find a tree or plant and take a photo to show you appreciate nature!", "info_content": "Forests cover 31% of the land area on our planet. They help people thrive and survive by purifying water and air and providing people with jobs."},
         {"title": "Clean River", "description": "Keep waters blue.", "order": 7, "theme_id": "river", "xp_reward": 700, "video_id": "/static/videos/level2.mp4", "task_description": "Take a photo of you using a reusable water bottle!", "info_content": "Water pollution occurs when harmful substances—often chemicals or microorganisms—contaminate a stream, river, lake, ocean, aquifer, or other body of water."},
