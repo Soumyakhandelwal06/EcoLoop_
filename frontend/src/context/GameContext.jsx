@@ -9,6 +9,7 @@ console.log("EcoLoop API Base URL:", API_URL);
 
 const api = axios.create({
     baseURL: API_URL,
+    timeout: 15000, // 15 seconds timeout
 });
 
 // Add Token Interceptor
@@ -92,8 +93,17 @@ export const GameProvider = ({ children }) => {
             fetchLevels();
             return { success: true };
         } catch (err) {
-            setError(err.response?.data?.detail || "Login failed");
-            return { success: false, error: err.response?.data?.detail };
+            console.error("Login Error:", err);
+            let errorMessage = "Login failed";
+            if (err.code === 'ECONNABORTED') {
+                errorMessage = "Request timed out. The server might be waking up (Cold Start). Please try again.";
+            } else if (err.response?.data?.detail) {
+                errorMessage = err.response.data.detail;
+            } else if (!err.response) {
+                errorMessage = "Network error. Please check your internet connection and API URL.";
+            }
+            setError(errorMessage);
+            return { success: false, error: errorMessage };
         }
     };
 
@@ -108,7 +118,16 @@ export const GameProvider = ({ children }) => {
             fetchLevels();
             return { success: true };
         } catch (err) {
-            return { success: false, error: err.response?.data?.detail };
+            console.error("Register Error:", err);
+            let errorMessage = "Registration failed";
+            if (err.code === 'ECONNABORTED') {
+                errorMessage = "Request timed out. The server might be waking up (Cold Start). Please try again.";
+            } else if (err.response?.data?.detail) {
+                errorMessage = err.response.data.detail;
+            } else if (!err.response) {
+                errorMessage = "Network error. Please check your internet connection and API URL.";
+            }
+            return { success: false, error: errorMessage };
         }
     };
 
@@ -200,7 +219,14 @@ export const GameProvider = ({ children }) => {
     const getStoreItems = async () => {
         try {
             const res = await api.get('/store/items');
-            return res.data;
+            // Ensure image_url is fully qualified if it starts with /static
+            const processedData = res.data.map(item => ({
+                ...item,
+                image_url: item.image_url && item.image_url.startsWith('/') 
+                    ? `${API_URL}${item.image_url}` 
+                    : item.image_url
+            }));
+            return processedData;
         } catch (err) {
             console.error("Store Fetch Error:", err);
             return [];

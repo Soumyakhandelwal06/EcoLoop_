@@ -88,48 +88,59 @@ def update_user_streak(user: models.User, db: Session):
 
 @app.post("/register", response_model=schemas.Token)
 def register(user: schemas.UserCreate, db: Session = Depends(database.get_db)):
+    print(f"Registration attempt: {user.username}")
     # Normalize username to lowercase
     user.username = user.username.lower()
 
     # Check if user exists
     db_user = db.query(models.User).filter(models.User.username == user.username).first()
     if db_user:
+        print(f"Registration failed: Username '{user.username}' taken")
         raise HTTPException(status_code=400, detail="Username already registered")
     
     db_email = db.query(models.User).filter(models.User.email == user.email).first()
     if db_email:
+        print(f"Registration failed: Email '{user.email}' taken")
         raise HTTPException(status_code=400, detail="Email already registered")
     
-    # Create User
-    hashed_pwd = auth.get_password_hash(user.password)
-    new_user = models.User(
-        username=user.username, 
-        email=user.email, 
-        hashed_password=hashed_pwd,
-        streak=0,
-        last_login=None
-    )
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    
-    # Initialize Progress (Unlock Level 1)
-    # Get Level 1 ID
-    level1 = db.query(models.Level).filter(models.Level.order == 1).first()
-    if level1:
-        new_progress = models.UserProgress(
-            user_id=new_user.id,
-            level_id=level1.id,
-            status="unlocked",
-            score=0
+    try:
+        # Create User
+        print("Hashing password...")
+        hashed_pwd = auth.get_password_hash(user.password)
+        new_user = models.User(
+            username=user.username, 
+            email=user.email, 
+            hashed_password=hashed_pwd,
+            streak=0,
+            last_login=None
         )
-        db.add(new_progress)
+        db.add(new_user)
+        db.flush() # Get ID without committing yet
+        print(f"User created with ID: {new_user.id}")
+        
+        # Initialize Progress (Unlock Level 1)
+        # Get Level 1 ID
+        level1 = db.query(models.Level).filter(models.Level.order == 1).first()
+        if level1:
+            print(f"Unlocking Level 1 for user {new_user.id}")
+            new_progress = models.UserProgress(
+                user_id=new_user.id,
+                level_id=level1.id,
+                status="unlocked",
+                score=0
+            )
+            db.add(new_progress)
+        
         db.commit()
-    
-    # Create Token
-    access_token = auth.create_access_token(data={"sub": new_user.username})
-
-    return {"access_token": access_token, "token_type": "bearer"}
+        print("Registration transaction committed successfully")
+        
+        # Create Token
+        access_token = auth.create_access_token(data={"sub": new_user.username})
+        return {"access_token": access_token, "token_type": "bearer"}
+    except Exception as e:
+        db.rollback()
+        print(f"CRITICAL ERROR during registration: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
 
 @app.post("/login", response_model=schemas.Token)
 def login(user_credentials: schemas.UserLogin, db: Session = Depends(database.get_db)):
