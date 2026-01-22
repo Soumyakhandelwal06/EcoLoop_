@@ -9,8 +9,10 @@ console.log("EcoLoop API Base URL:", API_URL);
 
 const api = axios.create({
     baseURL: API_URL,
-    timeout: 15000, // 15 seconds timeout
+    timeout: 120000, // 120 seconds timeout (to handle extremely slow Render cold starts)
 });
+
+console.log("Axios Instance Created with Timeout:", api.defaults.timeout);
 
 // Add Token Interceptor
 api.interceptors.request.use((config) => {
@@ -95,12 +97,14 @@ export const GameProvider = ({ children }) => {
         } catch (err) {
             console.error("Login Error:", err);
             let errorMessage = "Login failed";
-            if (err.code === 'ECONNABORTED') {
-                errorMessage = "Request timed out. The server might be waking up (Cold Start). Please try again.";
+            if (err.code === 'ECONNABORTED' || err.message?.includes('timeout')) {
+                errorMessage = "Request timed out. The server might be waking up (Cold Start). This can take up to 2 minutes on the first try. Please wait and try again.";
+                console.warn("Timeout detected:", err);
             } else if (err.response?.data?.detail) {
                 errorMessage = err.response.data.detail;
             } else if (!err.response) {
-                errorMessage = "Network error. Please check your internet connection and API URL.";
+                errorMessage = "Network error. Please check your internet connection and verify if the backend is running at: " + API_URL;
+                console.error("Network error details:", err);
             }
             setError(errorMessage);
             return { success: false, error: errorMessage };
@@ -120,12 +124,14 @@ export const GameProvider = ({ children }) => {
         } catch (err) {
             console.error("Register Error:", err);
             let errorMessage = "Registration failed";
-            if (err.code === 'ECONNABORTED') {
-                errorMessage = "Request timed out. The server might be waking up (Cold Start). Please try again.";
+            if (err.code === 'ECONNABORTED' || err.message?.includes('timeout')) {
+                errorMessage = "Request timed out. The server might be waking up (Cold Start). This can take up to 2 minutes on the first try. Please wait and try again.";
+                console.warn("Timeout detected during registration:", err);
             } else if (err.response?.data?.detail) {
                 errorMessage = err.response.data.detail;
             } else if (!err.response) {
-                errorMessage = "Network error. Please check your internet connection and API URL.";
+                errorMessage = "Network error. Please check your internet connection and verify if the backend is running at: " + API_URL;
+                console.error("Network error details during registration:", err);
             }
             return { success: false, error: errorMessage };
         }
