@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Leaf, Coins, Flame, LogOut, Trophy, ShoppingBag, Target, Camera, Globe, Info, Mail, Menu } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Leaf, Coins, Flame, LogOut, Trophy, ShoppingBag, Target, Camera, Globe, Info, Mail, Menu, X } from 'lucide-react';
 import { useGame } from '../../context/GameContext';
 import StreakCalendar from './StreakCalendar';
 import ChallengesModal from '../gamification/ChallengesModal';
