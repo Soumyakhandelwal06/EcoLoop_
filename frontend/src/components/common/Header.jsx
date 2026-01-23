@@ -29,6 +29,7 @@ const Header = () => {
     const [showCalendar, setShowCalendar] = useState(false);
     const [isScannerOpen, setIsScannerOpen] = useState(false);
     const [isChallengesOpen, setIsChallengesOpen] = useState(false);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const handleLogout = () => {
         logout();
@@ -124,9 +125,14 @@ const Header = () => {
                                         <IconButton to="/store" icon={ShoppingBag} title="Store" />
                                     </div>
 
-                                    {/* Mobile Nav Button (New) */}
+                                    {/* Mobile Nav Button (Fixed) */}
                                     <div className="lg:hidden">
-                                         <IconButton to="/dashboard" icon={Menu} title="Menu" />
+                                         <button 
+                                            onClick={() => setIsMenuOpen(true)}
+                                            className="p-3 text-slate-400 hover:text-green-600 hover:bg-green-50 rounded-full transition-all"
+                                         >
+                                            <Menu className="w-6 h-6" />
+                                         </button>
                                     </div>
 
                                     {/* Profile */}
@@ -171,6 +177,83 @@ const Header = () => {
                     />
                 </>
             )}
+
+            {/* Mobile Menu Overlay */}
+            <AnimatePresence>
+                {isMenuOpen && (
+                    <motion.div
+                        initial={{ opacity: 0, x: '100%' }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: '100%' }}
+                        className="fixed inset-0 z-[110] bg-white flex flex-col p-8"
+                    >
+                        <div className="flex justify-between items-center mb-12">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-green-600 rounded-xl flex items-center justify-center text-white">
+                                    <Leaf className="w-6 h-6" />
+                                </div>
+                                <span className="font-black text-2xl text-slate-800">EcoLoop</span>
+                            </div>
+                            <button 
+                                onClick={() => setIsMenuOpen(false)}
+                                className="p-2 bg-slate-100 rounded-full text-slate-600"
+                            >
+                                <X size={28} />
+                            </button>
+                        </div>
+
+                        <nav className="flex flex-col gap-6">
+                            <Link to="/dashboard" onClick={() => setIsMenuOpen(false)} className="text-3xl font-black text-slate-800 hover:text-green-600 transition flex items-center gap-4">
+                                <Leaf className="text-green-500" /> Play
+                            </Link>
+                            <Link to="/community" onClick={() => setIsMenuOpen(false)} className="text-3xl font-black text-slate-800 hover:text-green-600 transition flex items-center gap-4">
+                                <Globe className="text-blue-500" /> Community
+                            </Link>
+                            <Link to="/leaderboard" onClick={() => setIsMenuOpen(false)} className="text-3xl font-black text-slate-800 hover:text-green-600 transition flex items-center gap-4">
+                                <Trophy className="text-yellow-500" /> Leaderboard
+                            </Link>
+                            <Link to="/store" onClick={() => setIsMenuOpen(false)} className="text-3xl font-black text-slate-800 hover:text-green-600 transition flex items-center gap-4">
+                                <ShoppingBag className="text-orange-500" /> Store
+                            </Link>
+                            <div className="h-px bg-slate-100 my-4"></div>
+                            <Link to="/about" onClick={() => setIsMenuOpen(false)} className="text-xl font-bold text-slate-500 hover:text-green-600 flex items-center gap-4">
+                                <Info size={20} /> About Us
+                            </Link>
+                            <Link to="/contact" onClick={() => setIsMenuOpen(false)} className="text-xl font-bold text-slate-500 hover:text-green-600 flex items-center gap-4">
+                                <Mail size={20} /> Contact Us
+                            </Link>
+                        </nav>
+
+                        <div className="mt-auto pt-8 border-t border-slate-100">
+                             <div className="flex items-center justify-between bg-slate-50 p-6 rounded-[2.5rem] mb-6">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center border-2 border-green-500">
+                                        <span className="text-2xl">👩‍🎓</span>
+                                    </div>
+                                    <div>
+                                        <p className="font-black text-slate-800">{user.username}</p>
+                                        <p className="text-xs font-bold text-green-600 uppercase tracking-widest">{identity}</p>
+                                    </div>
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Coins</p>
+                                    <p className="text-xl font-black text-yellow-600">{user.coins}</p>
+                                </div>
+                             </div>
+
+                             <button 
+                                onClick={() => {
+                                    handleLogout();
+                                    setIsMenuOpen(false);
+                                }}
+                                className="w-full flex items-center justify-center gap-3 py-5 bg-red-50 text-red-600 rounded-[2rem] font-black hover:bg-red-100 transition"
+                             >
+                                <LogOut size={24} /> Logout
+                             </button>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </>
     );
 };
