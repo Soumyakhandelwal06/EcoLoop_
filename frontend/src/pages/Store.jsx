@@ -118,31 +118,31 @@ const Store = () => {
                 </motion.div>
 
                 {/* Store Hero */}
-                <div className="bg-gradient-to-br from-gray-900 via-emerald-950 to-gray-900 rounded-[3rem] p-16 mb-12 relative overflow-hidden text-center shadow-2xl shadow-emerald-900/20">
-                    <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-400/10 rounded-full blur-[100px] -mr-48 -mt-48 backdrop-blur-3xl"></div>
-                    <div className="absolute bottom-0 left-0 w-80 h-80 bg-green-500/10 rounded-full blur-[100px] -ml-40 -mb-40 backdrop-blur-3xl"></div>
+                <div className="bg-gradient-to-br from-gray-900 via-emerald-950 to-gray-900 rounded-[2rem] sm:rounded-[3rem] p-8 sm:p-16 mb-8 sm:mb-12 relative overflow-hidden text-center shadow-2xl shadow-emerald-900/20">
+                    <div className="absolute top-0 right-0 w-64 sm:w-96 h-64 sm:h-96 bg-emerald-400/10 rounded-full blur-[80px] sm:blur-[100px] -mr-32 sm:-mr-48 -mt-32 sm:-mt-48 backdrop-blur-3xl"></div>
+                    <div className="absolute bottom-0 left-0 w-64 sm:w-80 h-64 sm:h-80 bg-green-500/10 rounded-full blur-[80px] sm:blur-[100px] -ml-32 sm:-ml-40 -mb-32 sm:-mb-40 backdrop-blur-3xl"></div>
                     <div className="relative z-10 flex flex-col items-center">
                         <motion.div
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
-                            className="bg-emerald-400/15 p-5 rounded-[2rem] mb-6 backdrop-blur-xl border border-emerald-400/20"
+                            className="bg-emerald-400/15 p-4 sm:p-5 rounded-2xl sm:rounded-[2rem] mb-4 sm:mb-6 backdrop-blur-xl border border-emerald-400/20"
                         >
-                            <ShoppingBag className="w-12 h-12 text-emerald-400" />
+                            <ShoppingBag className="w-8 h-8 sm:w-12 sm:h-12 text-emerald-400" />
                         </motion.div>
-                        <h1 className="text-6xl font-black text-white mb-4 tracking-tight drop-shadow-lg">EcoLoop <span className="text-emerald-400">Store</span></h1>
-                        <p className="text-emerald-100/60 text-xl font-medium max-w-lg mx-auto leading-relaxed">
+                        <h1 className="text-4xl sm:text-6xl font-black text-white mb-3 sm:mb-4 tracking-tight drop-shadow-lg">EcoLoop <span className="text-emerald-400">Store</span></h1>
+                        <p className="text-emerald-100/60 text-base sm:text-xl font-medium max-w-lg mx-auto leading-relaxed">
                             Redeem your EcoCoins for real-world impact and exclusive premium goodies!
                         </p>
                     </div>
                 </div>
 
                 {/* Sub-Header / Filters (LeetCode Style) */}
-                <div className="flex flex-wrap gap-2 mb-12 justify-center bg-white/50 backdrop-blur-sm p-2 rounded-[2.5rem] border border-gray-200/50 max-w-fit mx-auto shadow-sm">
+                <div className="flex flex-wrap gap-2 mb-8 sm:mb-12 justify-center bg-white/50 backdrop-blur-sm p-1.5 sm:p-2 rounded-3xl sm:rounded-[2.5rem] border border-gray-200/50 max-w-fit mx-auto shadow-sm overflow-x-auto">
                     {['All Items', 'Symbolic', 'Premium', 'Virtual', 'Student'].map((tab) => (
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
-                            className={`px-8 py-3 rounded-full font-bold transition-all duration-300 ${activeTab === tab
+                            className={`px-4 sm:px-8 py-2 sm:py-3 rounded-full font-bold transition-all duration-300 text-sm sm:text-base whitespace-nowrap ${activeTab === tab
                                 ? 'bg-gray-900 text-white shadow-xl shadow-gray-900/20 scale-105'
                                 : 'text-gray-500 hover:text-gray-800 hover:bg-gray-100'
                                 }`}

@@ -62,25 +62,25 @@ const ScannerModal = ({ isOpen, onClose }) => {
                         className="bg-white rounded-[40px] shadow-2xl max-w-xl w-full overflow-hidden relative border border-white/20 max-h-[90vh] flex flex-col"
                     >
                     {/* Header Decoration */}
-                    <div className="h-24 bg-gradient-to-r from-emerald-500 to-green-600 flex items-center justify-between px-8 relative overflow-hidden">
+                    <div className="h-20 sm:h-24 bg-gradient-to-r from-emerald-500 to-green-600 flex items-center justify-between px-6 sm:px-8 relative overflow-hidden">
                         <div className="absolute inset-0 opacity-10 pointer-events-none">
                             <Sparkles className="w-full h-full scale-150 rotate-12" />
                         </div>
-                        <div className="flex items-center gap-3">
-                            <div className="bg-white/20 p-2 rounded-2xl backdrop-blur-md">
-                                <Camera className="text-white w-6 h-6" />
+                        <div className="flex items-center gap-2 sm:gap-3">
+                            <div className="bg-white/20 p-2 rounded-xl sm:rounded-2xl backdrop-blur-md">
+                                <Camera className="text-white w-5 h-5 sm:w-6 sm:h-6" />
                             </div>
-                            <h2 className="text-white text-2xl font-black tracking-tight">AI Eco-Scanner</h2>
+                            <h2 className="text-white text-xl sm:text-2xl font-black tracking-tight">AI Eco-Scanner</h2>
                         </div>
                         <button 
                             onClick={onClose}
                             className="bg-white/10 hover:bg-white/20 p-2 rounded-full transition text-white relative z-10"
                         >
-                            <X size={24} />
+                            <X size={20} className="sm:w-6 sm:h-6" />
                         </button>
                     </div>
 
-                    <div className="p-8 pb-12 overflow-y-auto custom-scrollbar">
+                    <div className="p-6 sm:p-8 pb-10 sm:pb-12 overflow-y-auto custom-scrollbar">
                         {!result ? (
                             <div className="space-y-6">
                                 <p className="text-gray-500 font-medium text-center italic">

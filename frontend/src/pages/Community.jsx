@@ -25,8 +25,8 @@ const Community = () => {
     return (
         <div className="min-h-screen bg-slate-50 pb-20 flex flex-col">
             <Header />
-            <main className="max-w-4xl mx-auto px-4 flex-1 w-full py-8">
-                <h1 className="text-3xl font-bold text-green-800 mb-6">Community Events & Initiatives 🌍</h1>
+            <main className="max-w-4xl mx-auto px-4 flex-1 w-full py-6 sm:py-8">
+                <h1 className="text-2xl sm:text-3xl font-black text-green-800 mb-6 tracking-tight">Community Events 🌍</h1>
 
                 {loading ? (
                     <div className="text-center py-20 text-slate-500">Loading events...</div>

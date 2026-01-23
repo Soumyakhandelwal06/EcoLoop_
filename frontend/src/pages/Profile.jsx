@@ -131,19 +131,19 @@ const Profile = () => {
 
             <main className="max-w-5xl mx-auto px-6 pt-10">
                 {/* 1. TOP HEADER & NAVIGATION */}
-                <div className="flex justify-between items-center mb-10">
+                <div className="flex justify-between items-center mb-6 sm:mb-10">
                     <button 
                         onClick={() => navigate('/dashboard')}
-                        className="flex items-center gap-2 text-gray-500 font-bold hover:text-green-600 transition"
+                        className="flex items-center gap-2 text-gray-500 font-bold hover:text-green-600 transition text-sm sm:text-base"
                     >
-                        <ArrowLeft size={20} /> Back to Dashboard
+                        <ArrowLeft size={18} /> Back to Dashboard
                     </button>
                 </div>
 
                 {/* 2. PROFILE HEADER (Restored Previous Style) */}
-                <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 flex flex-col md:flex-row items-center gap-8 mb-8">
+                <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-100 flex flex-col md:flex-row items-center gap-6 sm:gap-8 mb-8">
                     <div className="relative group">
-                        <div className="w-32 h-32 bg-green-50 rounded-full flex items-center justify-center text-6xl shadow-inner border-4 border-white">
+                        <div className="w-24 h-24 sm:w-32 sm:h-32 bg-green-50 rounded-full flex items-center justify-center text-5xl sm:text-6xl shadow-inner border-4 border-white">
                             {user.profile_image ? (
                                 <img src={user.profile_image} alt="Profile" className="w-full h-full object-cover rounded-full" />
                             ) : (
@@ -152,20 +152,20 @@ const Profile = () => {
                         </div>
                     </div>
                     <div className="flex-1 text-center md:text-left">
-                        <div className="flex flex-col md:flex-row md:items-center gap-3 mb-2">
-                            <h1 className="text-3xl font-black text-gray-800">{user.username}</h1>
-                            <span className="inline-flex items-center gap-1 bg-green-50 text-green-600 px-3 py-1 rounded-full text-xs font-bold border border-green-100 uppercase tracking-wider self-center md:self-auto uppercase">
-                                <CheckCircle size={14} className="fill-green-600 text-white" /> Verified Guardian
+                        <div className="flex flex-col md:flex-row md:items-center gap-2 sm:gap-3 mb-2">
+                            <h1 className="text-2xl sm:text-3xl font-black text-gray-800">{user.username}</h1>
+                            <span className="inline-flex items-center gap-1 bg-green-50 text-green-600 px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold border border-green-100 uppercase tracking-wider self-center md:self-auto">
+                                <CheckCircle size={12} className="fill-green-600 text-white" /> Verified Guardian
                             </span>
                         </div>
-                        <p className="flex items-center justify-center md:justify-start gap-2 text-green-600 font-bold text-lg">
-                            <TrendingUp size={20} /> {identity} • Level {nextLevelId}
+                        <p className="flex items-center justify-center md:justify-start gap-2 text-green-600 font-bold text-base sm:text-lg">
+                            <TrendingUp size={18} /> {identity} • Level {nextLevelId}
                         </p>
                     </div>
                     <div className="flex gap-4">
-                        <div className="text-center bg-gray-50 px-6 py-3 rounded-2xl border border-gray-100">
+                        <div className="text-center bg-gray-50 px-4 sm:px-6 py-2 sm:py-3 rounded-2xl border border-gray-100">
                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none mb-1">EcoCoins</p>
-                           <p className="text-2xl font-black text-yellow-600">{user.coins}</p>
+                           <p className="text-xl sm:text-2xl font-black text-yellow-600">{user.coins}</p>
                         </div>
                     </div>
                 </div>
@@ -299,27 +299,27 @@ const Profile = () => {
 
                 {/* 5. VIRTUAL HERO ID SECTION (The Requested Add-on) */}
                 <div className="mb-16">
-                    <div className="flex flex-col sm:flex-row items-center justify-between gap-6 mb-10">
-                        <h2 className="text-3xl font-black text-slate-800 flex items-center gap-4">
-                            <div className="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center text-white shadow-sm">
-                            <Award size={24} className="opacity-80" />
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-6 mb-8 sm:mb-10">
+                        <h2 className="text-2xl sm:text-3xl font-black text-slate-800 flex items-center gap-3 sm:gap-4">
+                            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-slate-800 rounded-xl flex items-center justify-center text-white shadow-sm">
+                                <Award size={20} className="opacity-80" />
                             </div>
                             Virtual Hero ID
                         </h2>
-                        <div className="flex gap-4 w-full sm:w-auto">
-                            <button onClick={handleShare} className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-white text-slate-600 px-8 py-3 rounded-2xl font-black shadow-sm border border-slate-100 hover:bg-slate-50 transition active:scale-95">
-                                <ArrowRight size={20} className="rotate-45" /> Share
+                        <div className="flex gap-3 sm:gap-4 w-full sm:w-auto">
+                            <button onClick={handleShare} className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-white text-slate-600 px-4 sm:px-8 py-2.5 sm:py-3 rounded-2xl font-black shadow-sm border border-slate-100 hover:bg-slate-50 transition active:scale-95 text-sm sm:text-base">
+                                <ArrowRight size={18} className="rotate-45" /> Share
                             </button>
-                            <button onClick={handleDownload} className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-green-600 text-white px-8 py-3 rounded-2xl font-black shadow-lg shadow-green-200 hover:bg-green-700 transition active:scale-95">
-                                <Calendar size={20} /> Download
+                            <button onClick={handleDownload} className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-green-600 text-white px-4 sm:px-8 py-2.5 sm:py-3 rounded-2xl font-black shadow-lg shadow-green-200 hover:bg-green-700 transition active:scale-95 text-sm sm:text-base">
+                                <Calendar size={18} /> Download
                             </button>
                         </div>
                     </div>
 
-                    <div className="w-full flex justify-center py-6">
+                    <div className="w-full flex justify-center py-4 sm:py-6 overflow-x-auto lg:overflow-visible">
                         <div 
                             ref={cardRef} 
-                            className="w-[700px] h-[400px] bg-white rounded-[3rem] shadow-2xl relative overflow-hidden border border-slate-100 flex p-12"
+                            className="min-w-[600px] sm:min-w-[700px] w-[700px] h-[400px] bg-white rounded-[2.5rem] sm:rounded-[3rem] shadow-2xl relative overflow-hidden border border-slate-100 flex p-8 sm:p-12 transform scale-[0.5] xs:scale-[0.8] sm:scale-100 origin-center sm:origin-center"
                         >
                             {/* Main Content Area */}
                             <div className="flex-1 z-10 space-y-8">

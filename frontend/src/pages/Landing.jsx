@@ -22,22 +22,22 @@ const Landing = () => {
       </nav>
 
       {/* Hero Section */}
-      <main className="flex-1 flex flex-col items-center justify-center text-center p-6 mt-8 w-full">
-        <div className="animate-bounce mb-6">
-          <span className="text-6xl">🌍</span>
+      <main className="flex-1 flex flex-col items-center justify-center text-center p-4 sm:p-6 mt-4 sm:mt-8 w-full">
+        <div className="animate-bounce mb-4 sm:mb-6">
+          <span className="text-4xl sm:text-6xl">🌍</span>
         </div>
-        <h2 className="text-5xl md:text-7xl font-extrabold text-green-800 mb-6 tracking-tight">
+        <h2 className="text-4xl sm:text-5xl md:text-7xl font-extrabold text-green-800 mb-4 sm:mb-6 tracking-tight leading-tight">
           Save the Planet, <br />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-teal-500">
             One Level at a Time!
           </span>
         </h2>
-        <p className="text-xl text-green-700 max-w-2xl mb-10 font-medium">
+        <p className="text-lg sm:text-xl text-green-700 max-w-2xl mb-8 sm:mb-10 font-medium px-4">
           Join the fun! Watch videos, take quizzes, and do real-world eco tasks to earn badges and become an Eco Hero.
         </p>
 
         <Link to="/signup" className="group">
-          <div className="bg-yellow-400 text-yellow-900 border-b-4 border-yellow-600 rounded-2xl px-8 py-4 text-2xl font-bold shadow-xl transform transition group-hover:scale-105 active:border-b-0 active:translate-y-1">
+          <div className="bg-yellow-400 text-yellow-900 border-b-4 border-yellow-600 rounded-2xl px-6 sm:px-8 py-3 sm:py-4 text-xl sm:text-2xl font-bold shadow-xl transform transition group-hover:scale-105 active:border-b-0 active:translate-y-1">
             Play Now 🚀
           </div>
         </Link>

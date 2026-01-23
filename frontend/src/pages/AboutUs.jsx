@@ -70,17 +70,17 @@ const AboutUs = () => {
                 </FloatingElement>
             </motion.div>
 
-            <main className="flex-1 max-w-3xl mx-auto px-6 py-10 relative z-10">
+            <main className="flex-1 max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-10 relative z-10">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8 }}
                 >
-                    <h1 className="text-5xl font-black text-slate-800 mb-8 text-center tracking-tight">
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-800 mb-6 sm:mb-8 text-center tracking-tight">
                         About EcoLoop <span className="inline-block animate-bounce">🌿</span>
                     </h1>
 
-                    <div className="bg-white/80 backdrop-blur-xl p-8 rounded-[40px] shadow-xl border border-white/50 space-y-8 text-lg text-slate-700 leading-relaxed relative overflow-hidden">
+                    <div className="bg-white/80 backdrop-blur-xl p-6 sm:p-8 rounded-[30px] sm:rounded-[40px] shadow-xl border border-white/50 space-y-6 sm:space-y-8 text-base sm:text-lg text-slate-700 leading-relaxed relative overflow-hidden">
                         <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-green-400 via-emerald-500 to-teal-500"></div>
 
                         <section>
